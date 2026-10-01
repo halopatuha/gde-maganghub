@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>GDE MagangHub</title>
+  <meta name="description" content="Log book digital magang - PT Geo Dipa Energi, Unit Patuha">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%23111'/%3E%3Ctext x='50' y='68' font-size='58' font-family='Inter,Arial' font-weight='800' fill='%23fff' text-anchor='middle'%3EG%3C/text%3E%3C/svg%3E">
+  <style>
+    :root { --bar-h: 44px; }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; height: 100%; background: #f1f5f9; }
+    body {
+      font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      color: #111;
+      overflow: hidden;
+    }
+
+    /* Thin top bar - keeps the link clean but still gives a way out */
+    .topbar {
+      height: var(--bar-h);
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 12px; padding: 0 14px;
+      background: #ffffff; border-bottom: 1px solid #eeeeee;
+      position: fixed; top: 0; left: 0; right: 0; z-index: 10;
+    }
+    .brand { display: flex; align-items: center; gap: 9px; min-width: 0; }
+    .brand-logo {
+      width: 26px; height: 26px; border-radius: 7px; background: #111; color: #fff;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 800; font-size: 12px; flex-shrink: 0;
+    }
+    .brand-text { font-size: 13px; font-weight: 600; letter-spacing: -.01em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .brand-text small { display: block; font-weight: 500; font-size: 10.5px; color: #9a9a9a; letter-spacing: .04em; text-transform: uppercase; }
+    .actions { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+    .btn {
+      display: inline-flex; align-items: center; gap: 6px;
+      border: 1px solid #eeeeee; background: #fff; color: #111;
+      border-radius: 999px; padding: 6px 12px; font-size: 12px; font-weight: 600;
+      text-decoration: none; cursor: pointer;
+    }
+    .btn:hover { background: #f5f5f5; }
+    .btn-dark { background: #111; border-color: #111; color: #fff; }
+    .btn-dark:hover { background: #000; }
+
+    /* Iframe shell */
+    .frame-wrap {
+      position: fixed; inset: var(--bar-h) 0 0 0;
+      background: #ffffff;
+    }
+    iframe { width: 100%; height: 100%; border: 0; display: block; background: #fff; }
+
+    /* Loading + fallback */
+    .loader {
+      position: absolute; inset: 0; display: flex; flex-direction: column;
+      align-items: center; justify-content: center; gap: 12px;
+      background: #fff; z-index: 5; transition: opacity .3s ease;
+    }
+    .loader.hide { opacity: 0; pointer-events: none; }
+    .spinner {
+      width: 30px; height: 30px; border-radius: 50%;
+      border: 3px solid #eeeeee; border-top-color: #111;
+      animation: spin 0.9s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .loader p { margin: 0; font-size: 13px; color: #6b7280; }
+
+    .fallback {
+      position: absolute; inset: 0; display: none; flex-direction: column;
+      align-items: center; justify-content: center; gap: 10px;
+      background: #fff; z-index: 6; text-align: center; padding: 24px;
+    }
+    .fallback.show { display: flex; }
+    .fallback h1 { font-size: 16px; margin: 0; }
+    .fallback p { font-size: 13px; color: #6b7280; max-width: 420px; margin: 0; line-height: 1.6; }
+    .fallback code { background: #f5f5f5; border: 1px solid #eee; border-radius: 6px; padding: 2px 6px; font-size: 12px; }
+
+    @media (max-width: 520px) {
+      .brand-text.full { display: none; }
+      .btn-label { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <!--
+    ============================================================
+    GDE MAGANGHUB - WRAPPER GITHUB PAGES
+    ============================================================
+    SATU-SATUNYA yang perlu kamu ubah di file ini: konstanta GAS_URL di bawah.
+    Tempel URL deploy Apps Script yang berakhiran /exec.
+
+    Kenapa dipisah dari gas/Index.html.txt?
+    - gas/Index.html.txt  = template HtmlService milik Apps Script.
+    - docs/index.html     = halaman statis GitHub Pages yang meng-iframe GAS.
+
+    Syarat di sisi GAS (sudah diatur di Kode.gs.txt):
+    - setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL)
+    - setSandboxMode(HtmlService.SandboxMode.IFRAME)
+    ============================================================
+  -->
+  <script>
+    // window.GAS_URL = 'https://script.google.com/macros/s/GANTI_DENGAN_ID_DEPLOYMENT_ANDA/exec';
+    window.GAS_URL = 'https://script.google.com/macros/s/AKfycbzSv4As6Fv-xmIhYqHg_IHVQXziIcaOnPLvrTIlDnKEB-SotlHD0J91KYCp9Ak_I3Nb/exec';
+
+  </script>
+
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-logo">G</div>
+      <div class="brand-text full">
+        Geo Dipa Energi<small>MagangHub</small>
+      </div>
+    </div>
+    <div class="actions">
+      <button class="btn" id="btnReload" title="Muat ulang">
+        <span>⟳</span><span class="btn-label">Muat ulang</span>
+      </button>
+      <a class="btn btn-dark" id="btnOpen" href="#" target="_blank" rel="noopener" title="Buka di tab baru">
+        <span>↗</span><span class="btn-label">Buka di tab baru</span>
+      </a>
+    </div>
+  </header>
+
+  <div class="frame-wrap">
+    <div class="loader" id="loader">
+      <div class="spinner"></div>
+      <p>Memuat GDE MagangHub…</p>
+    </div>
+
+    <div class="fallback" id="fallback">
+      <h1>Aplikasi tidak bisa ditampilkan di dalam halaman ini</h1>
+      <p>
+        Biasanya karena browser memblokir iframe atau URL deploy belum diatur.
+        Periksa konstanta <code>GAS_URL</code> di <code>docs/index.html</code>,
+        lalu buka aplikasi langsung di tab baru.
+      </p>
+      <a class="btn btn-dark" id="btnOpenFallback" href="#" target="_blank" rel="noopener">Buka aplikasi di tab baru</a>
+    </div>
+
+    <iframe id="appFrame" title="GDE MagangHub"
+      allow="clipboard-write; fullscreen"
+      referrerpolicy="no-referrer-when-downgrade"
+      sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox allow-downloads allow-modals"></iframe>
+  </div>
+
+  <script>
+    (function () {
+      var GAS_URL = window.GAS_URL || '';
+      var frame = document.getElementById('appFrame');
+      var loader = document.getElementById('loader');
+      var fallback = document.getElementById('fallback');
+      var btnOpen = document.getElementById('btnOpen');
+      var btnOpenFallback = document.getElementById('btnOpenFallback');
+      var btnReload = document.getElementById('btnReload');
+      var loaded = false;
+      var watchdog = null;
+
+      function showFallback() {
+        if (loaded) return;
+        fallback.classList.add('show');
+        loader.classList.add('hide');
+      }
+
+      function markLoaded() {
+        loaded = true;
+        loader.classList.add('hide');
+        fallback.classList.remove('show');
+      }
+
+      var isPlaceholder = !GAS_URL || GAS_URL.indexOf('GANTI_DENGAN') !== -1;
+
+      if (isPlaceholder) {
+        document.querySelector('.loader p').textContent = 'URL deploy belum diatur';
+        showFallback();
+        btnOpen.setAttribute('href', '#');
+        btnOpen.addEventListener('click', function (e) { e.preventDefault(); alert('Isi dulu konstanta GAS_URL di docs/index.html'); });
+        btnOpenFallback.setAttribute('href', '#');
+        btnOpenFallback.addEventListener('click', function (e) { e.preventDefault(); });
+        return;
+      }
+
+      btnOpen.setAttribute('href', GAS_URL);
+      btnOpenFallback.setAttribute('href', GAS_URL);
+
+      // Allow ?url=... override for testing (hanya http/https)
+      try {
+        var qs = new URLSearchParams(window.location.search).get('url');
+        if (qs && /^https?:\/\//i.test(qs)) GAS_URL = qs;
+      } catch (e) { }
+
+      frame.setAttribute('src', GAS_URL);
+
+      frame.addEventListener('load', markLoaded);
+
+      // Kalau 12 detik belum load (kemungkinan diblokir), tampilkan fallback
+      watchdog = setTimeout(showFallback, 12000);
+
+      btnReload.addEventListener('click', function () {
+        loaded = false;
+        loader.classList.remove('hide');
+        fallback.classList.remove('show');
+        frame.setAttribute('src', 'about:blank');
+        setTimeout(function () {
+          frame.setAttribute('src', GAS_URL);
+          clearTimeout(watchdog);
+          watchdog = setTimeout(showFallback, 12000);
+        }, 60);
+      });
+
+      // Teruskan hash (#view) ke iframe supaya deep-link tetap jalan
+      try {
+        if (window.location.hash) {
+          frame.addEventListener('load', function once() {
+            frame.removeEventListener('load', once);
+            try { frame.contentWindow.location.hash = window.location.hash; } catch (e) { }
+          });
+        }
+      } catch (e) { }
+    })();
+  </script>
+</body>
+</html>
